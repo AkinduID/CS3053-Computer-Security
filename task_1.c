@@ -3,19 +3,22 @@
 #include <stdio.h>
 #include <string.h>
 
-void vulnerable_function(char *input) {
-    char buffer[10];
+void stack_smash_vuln(char *input) {
+    char buffer[50];
     strcpy(buffer, input);
 }
-// The buffer array in vulnerable_function is defined to hold only 10 bytes. 
+// The buffer array in vulnerable_function is defined to hold only 50 bytes. 
 // However, strcpy(buffer, input); will copy the entire input string to buffer, regardless of its length.
 
-// If argv[1] is longer than 10 characters, it will overflow buffer and overwrite other stack memory, 
-// potentially overwriting the return address, leading to undefined behavior 
-// or allowing an attacker to control the program flow.
+// If str is longer than 50 characters, it will overflow buffer and overwrite adjacent stack memory, leading to stack smashing. 
+// It can cause overwriting the return address which can lead to undefined behavior 
+// It can cause overwriting the return address to the begining of a malicious code which can lead to security breaches
 
 
-int main(int argc, char **argv) {
-    vulnerable_function(argv[1]);
+int main() {
+    char input[100];
+    printf("Enter a string: ");
+    gets(input);
+    stack_smash_vuln(input);
     return 0;
 }
